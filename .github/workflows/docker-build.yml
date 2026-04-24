@@ -5,8 +5,6 @@ on:
     branches:
       - main
 
-
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -19,13 +17,19 @@ jobs:
       - name: Run tests
         run: |
           pip install pytest
-          pytest testfile.py -v
-      
+          pytest test_greet_user.py -v
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push Docker image
-        uses: docker/build-push-actions@v5
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/Bidemigrace-docker-ci-project
-            ${{ secrets.DOCKER_USERNAME }}/Bidemigrace-docker-ci-project:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/bidemigrace-docker-ci-project:latest
+            ${{ secrets.DOCKER_USERNAME }}/bidemigrace-docker-ci-project:${{ github.sha }}
